@@ -7,7 +7,15 @@ export const PostList = createContext({
 });
 
 const postListReducer = (currPostList, action) => {
-  return currPostList;
+  let newPostList = currPostList;
+  if (action.type === "DELETE_POST") {
+    newPostList = currPostList.filter(
+      (post) => post.id !== action.payload.postId
+    );
+  } else if (action.type === "ADD_POST") {
+    newPostList = [action.payload, ...currPostList];
+  }
+  return newPostList;
 };
 
 const PostListProvider = ({ children }) => {
@@ -16,8 +24,29 @@ const PostListProvider = ({ children }) => {
     DEFAULT_POST_LIST
   );
 
-  const addPost = () => {};
-  const deletePost = () => {};
+  const addPost = (userId, postTitle, postBody, reactions, tags) => {
+    dispatchPostList({
+      type: "ADD_POST",
+      payload: {
+        id: Date.now(),
+        title: postTitle,
+        body: postBody,
+        reactions: reactions,
+        userId: userId,
+        tags: tags,
+      },
+    });
+  };
+
+  const deletePost = (postId) => {
+    dispatchPostList({
+      type: "DELETE_POST",
+      payload: {
+        postId,
+      },
+    });
+  };
+
   return (
     <PostList.Provider value={{ postList, addPost, deletePost }}>
       {children}
@@ -29,18 +58,18 @@ const DEFAULT_POST_LIST = [
   {
     id: "1",
     title: "Going to Mumbai",
-    body: "Hi friends I am going to Mumbai for my vacation",
-    reactions: 3,
-    userId: "user-2",
-    tags: ["vacation", "Mumbai", "enjoying"],
+    body: "Hi Friends, I am going to Mumbai for my vacations. Hope to enjoy a lot. Peace out.",
+    reactions: 2,
+    userId: "user-9",
+    tags: ["vacation", "Mumbai", "Enjoying"],
   },
   {
     id: "2",
-    title: "Finally Graduated",
-    body: "I am so happy to inform that I passed btech successfully",
+    title: "Graduated",
+    body: "Finally Btech graduate. Thanks to this awesome campus for giving me a family and tons of memories for the lifetime.",
     reactions: 15,
-    userId: "user-6",
-    tags: ["graduation", "btech", "unbelievable"],
+    userId: "user-12",
+    tags: ["Graduating", "Unbelievable"],
   },
 ];
 
